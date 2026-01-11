@@ -8,20 +8,40 @@ gsap.registerPlugin(ScrollTrigger);
 
 const AboutSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Parallax background effect
       gsap.fromTo(
-        imageRef.current,
-        { opacity: 0, x: -100 },
+        bgRef.current,
+        { yPercent: -20 },
         {
-          opacity: 1,
-          x: 0,
-          duration: 1,
+          yPercent: 20,
+          ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        }
+      );
+
+      // Content animation with stagger
+      gsap.fromTo(
+        '.about-item',
+        { opacity: 0, y: 60, scale: 0.95 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: contentRef.current,
             start: 'top 80%',
             end: 'top 30%',
             toggleActions: 'play none none reverse',
@@ -29,17 +49,20 @@ const AboutSection = () => {
         }
       );
 
+      // Info cards animation
       gsap.fromTo(
-        contentRef.current,
-        { opacity: 0, x: 100 },
+        '.info-card',
+        { opacity: 0, x: -40, rotateY: -15 },
         {
           opacity: 1,
           x: 0,
-          duration: 1,
+          rotateY: 0,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: 'power2.out',
           scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 80%',
-            end: 'top 30%',
+            trigger: '.info-grid',
+            start: 'top 85%',
             toggleActions: 'play none none reverse',
           },
         }
@@ -60,61 +83,49 @@ const AboutSection = () => {
     <section
       id="about"
       ref={sectionRef}
-      className="section-container"
+      className="section-container relative overflow-hidden"
     >
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Image */}
-          <div ref={imageRef} className="relative opacity-0">
-            <div className="relative aspect-square max-w-md mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl blur-3xl" />
-              <img
-                src={soloImage}
-                alt="About Me"
-                className="relative w-full h-full object-cover rounded-3xl border border-border"
-              />
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center font-display text-3xl font-bold">
-                1
-                <span className="text-sm ml-1">yr</span>
-              </div>
-            </div>
-          </div>
+      {/* Parallax Background */}
+      <div ref={bgRef} className="absolute inset-0 -inset-y-20 z-0">
+        <img
+          src={soloImage}
+          alt=""
+          className="w-full h-full object-cover opacity-15"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background" />
+      </div>
 
-          {/* Content */}
-          <div ref={contentRef} className="opacity-0">
-            <h2 className="section-title">About Me</h2>
-            
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Hey there! I'm <span className="text-primary font-semibold">Syed Maroof Hussain</span>, 
-              a first-year BTech student at Integral University, Lucknow, specializing in 
-              <span className="text-accent font-semibold"> Computer Science with Cloud Computing and AI</span>. 
-              I completed my schooling at Christ Church College, Hazratganj with PCM and Computer Science.
-            </p>
+      <div className="container mx-auto px-4 relative z-10">
+        <div ref={contentRef} className="max-w-4xl mx-auto text-center">
+          <h2 className="about-item section-title opacity-0">About Me</h2>
+          
+          <p className="about-item text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed opacity-0">
+            Hey there! I'm <span className="text-primary font-semibold">Syed Maroof Hussain</span>, 
+            a first-year BTech student at Integral University, Lucknow, specializing in 
+            <span className="text-accent font-semibold"> Computer Science with Cloud Computing and AI</span>. 
+            I completed my schooling at Christ Church College, Hazratganj with PCM and Computer Science.
+            Currently pursuing a Web Development course on Udemy and building projects that combine 
+            my passion for technology with creative problem-solving.
+          </p>
 
-            <p className="text-muted-foreground mb-8 leading-relaxed">
-              Like Sung Jin-Woo, I believe in constant self-improvement and leveling up every day. 
-              Currently pursuing a Web Development course on Udemy and building projects that combine 
-              my passion for technology with creative problem-solving.
-            </p>
-
-            {/* Info Grid */}
-            <div className="grid sm:grid-cols-2 gap-4">
-              {infoItems.map((item, index) => (
-                <div
-                  key={item.label}
-                  className="card-glow p-4 rounded-xl flex items-center gap-4"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="p-3 rounded-lg bg-primary/10">
-                    <item.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{item.label}</p>
-                    <p className="font-medium">{item.value}</p>
-                  </div>
+          {/* Info Grid */}
+          <div className="info-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {infoItems.map((item) => (
+              <div
+                key={item.label}
+                className="info-card card-glow p-5 rounded-xl flex flex-col items-center gap-3 text-center opacity-0"
+              >
+                <div className="p-4 rounded-xl bg-primary/10 border border-primary/20">
+                  <item.icon className="w-6 h-6 text-primary" />
                 </div>
-              ))}
-            </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">{item.label}</p>
+                  <p className="font-display font-medium text-sm">{item.value}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

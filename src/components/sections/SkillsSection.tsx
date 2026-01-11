@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import soloImage4 from '@/assets/solo-leveling-4.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,8 +40,26 @@ const SkillsSection = () => {
     return acc;
   }, {} as Record<string, Skill[]>);
 
+  const bgRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Parallax background
+      gsap.fromTo(
+        bgRef.current,
+        { yPercent: -15 },
+        {
+          yPercent: 15,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        }
+      );
+
       gsap.fromTo(
         titleRef.current,
         { opacity: 0, y: 50 },
@@ -57,15 +76,33 @@ const SkillsSection = () => {
 
       gsap.fromTo(
         '.skill-item',
-        { opacity: 0, x: -50 },
+        { opacity: 0, y: 60, scale: 0.9 },
         {
           opacity: 1,
-          x: 0,
-          duration: 0.6,
-          stagger: 0.1,
+          y: 0,
+          scale: 1,
+          duration: 0.7,
+          stagger: 0.15,
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: skillsRef.current,
-            start: 'top 80%',
+            start: 'top 85%',
+          },
+        }
+      );
+
+      // Animate skill bars on scroll
+      gsap.fromTo(
+        '.skill-bar-fill',
+        { width: 0 },
+        {
+          width: 'var(--target-width)',
+          duration: 1.2,
+          ease: 'power2.out',
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: skillsRef.current,
+            start: 'top 75%',
           },
         }
       );
@@ -88,9 +125,20 @@ const SkillsSection = () => {
     <section
       id="skills"
       ref={sectionRef}
-      className="section-container"
+      className="section-container relative overflow-hidden"
     >
-      <div className="container mx-auto px-4">
+      {/* Parallax Background */}
+      <div ref={bgRef} className="absolute inset-0 -inset-y-20 z-0">
+        <img
+          src={soloImage4}
+          alt=""
+          className="w-full h-full object-cover opacity-10"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <div ref={titleRef} className="text-center mb-16 opacity-0">
           <h2 className="section-title">Skills & Abilities</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -117,7 +165,7 @@ const SkillsSection = () => {
                     <div className="skill-bar">
                       <div
                         className={`skill-bar-fill bg-gradient-to-r ${getCategoryColor(category)}`}
-                        style={{ width: `${skill.proficiency}%` }}
+                        style={{ '--target-width': `${skill.proficiency}%` } as React.CSSProperties}
                       />
                     </div>
                   </div>
