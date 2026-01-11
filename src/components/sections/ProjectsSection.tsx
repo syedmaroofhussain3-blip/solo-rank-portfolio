@@ -35,8 +35,27 @@ const ProjectsSection = () => {
     },
   });
 
+  const bgRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Parallax background
+      gsap.fromTo(
+        bgRef.current,
+        { yPercent: -20, scale: 1.1 },
+        {
+          yPercent: 20,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.5,
+          },
+        }
+      );
+
       gsap.fromTo(
         titleRef.current,
         { opacity: 0, y: 50 },
@@ -53,15 +72,17 @@ const ProjectsSection = () => {
 
       gsap.fromTo(
         '.project-item',
-        { opacity: 0, y: 80 },
+        { opacity: 0, y: 100, rotateX: 15 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          rotateX: 0,
+          duration: 1,
           stagger: 0.2,
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: '.projects-grid',
-            start: 'top 80%',
+            start: 'top 85%',
           },
         }
       );
@@ -76,15 +97,16 @@ const ProjectsSection = () => {
       ref={sectionRef}
       className="section-container relative"
     >
-      {/* Background accent */}
-      <div className="absolute inset-0 opacity-10">
+      {/* Parallax Background */}
+      <div ref={bgRef} className="absolute inset-0 -inset-y-32 z-0">
         <img
           src={soloImage3}
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-15"
           aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/80" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
