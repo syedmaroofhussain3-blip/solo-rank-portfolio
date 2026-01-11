@@ -5,6 +5,7 @@ import { ExternalLink, Github, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import soloImage3 from '@/assets/solo-leveling-3.png';
+import soloRankLogo from '@/assets/solo-rank-logo.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -129,9 +130,9 @@ const ProjectsSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
                 {project.image_url ? (
                   <img
-                    src={project.image_url}
+                    src={project.image_url.includes('solo-rank-logo') ? soloRankLogo : project.image_url}
                     alt={project.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-black p-4"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted">
