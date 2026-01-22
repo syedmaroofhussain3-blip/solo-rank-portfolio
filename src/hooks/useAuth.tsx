@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const checkAdminRole = async (userId: string) => {
+  const checkAdminRole = async (userId: string): Promise<boolean> => {
     const { data, error } = await supabase
       .from('user_roles')
       .select('role')
@@ -27,11 +27,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .eq('role', 'admin')
       .maybeSingle();
     
-    if (!error && data) {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
+    const hasAdminRole = !error && !!data;
+    setIsAdmin(hasAdminRole);
+    return hasAdminRole;
   };
 
   useEffect(() => {
@@ -70,10 +68,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    // Wait for admin role check before returning
+    if (!error && data.user) {
+      await checkAdminRole(data.user.id);
+    }
+    
     return { error };
   };
 
