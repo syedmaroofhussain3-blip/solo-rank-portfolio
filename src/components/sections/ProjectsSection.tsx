@@ -113,10 +113,10 @@ const ProjectsSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div ref={titleRef} className="text-center mb-16 opacity-0">
-          <h2 className="section-title">Quest Log</h2>
+          <h2 className="section-title">My Projects</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            My completed projects and ongoing adventures. Each project represents 
-            a dungeon conquered and experience gained.
+            A showcase of my completed projects and ongoing work. Each one represents 
+            skills learned and challenges overcome.
           </p>
         </div>
 
