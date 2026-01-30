@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import soloImage3 from '@/assets/solo-leveling-3.png';
 import soloRankLogo from '@/assets/solo-rank-logo.png';
+import iulEventHub from '@/assets/iul-event-hub.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -131,7 +132,11 @@ const ProjectsSection = () => {
                 {project.image_url ? (
                   <div className="w-full h-full flex items-center justify-center bg-background/80 p-8">
                     <img
-                      src={project.image_url.includes('solo-rank-logo') ? soloRankLogo : project.image_url}
+                      src={
+                        project.image_url.includes('solo-rank-logo') ? soloRankLogo :
+                        project.image_url.includes('iul-event-hub') ? iulEventHub :
+                        project.image_url
+                      }
                       alt={project.title}
                       className="max-w-full max-h-full object-contain drop-shadow-2xl"
                     />
